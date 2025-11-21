@@ -1,0 +1,17 @@
+namespace: rhpds
+name: ripu
+version: 1.0.0
+readme: README.md
+authors:
+- Mitesh, The Mouse <mitsharm@redhat.com>
+description: your collection description
+license:
+- GPL-2.0-or-later
+license_file: ''
+tags: []
+dependencies: {}
+repository: https://github.com/rhpds/rhpds.ripu
+documentation: https://github.com/rhpds/rhpds.ripu
+homepage: https://github.com/rhpds/rhpds.ripu
+issues: https://github.com/rhpds/rhpds.ripu/issue/tracker
+build_ignore: []
