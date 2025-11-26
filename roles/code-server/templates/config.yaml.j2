@@ -1,0 +1,10 @@
+bind-addr: {{ code_server_bind_addr_ip }}:{{ code_server_bind_addr_port }}
+
+{% if code_server_auth_type == 'none' %}
+auth: none
+{% else %}
+auth: password
+password: "{{ code_server_user_password }}"
+{% endif %}
+
+cert: false

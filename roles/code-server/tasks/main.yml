@@ -1,0 +1,114 @@
+---
+
+- name: Download code-server package
+  ansible.builtin.get_url:
+    url: "{{ code_server_rpm_url }}"
+    dest: /tmp/code-server.rpm
+
+- name: Install code-server
+  ansible.builtin.yum:
+    name: /tmp/code-server.rpm
+    disable_gpg_check: true
+    state: present
+
+- name: Remove downloaded file
+  ansible.builtin.file:
+    path: "/tmp/code-server.rpm"
+    state: absent
+
+- name: Create directory in user's home
+  ansible.builtin.file:
+    path: "{{ code_server_user_dir }}/{{ _directory }}/"
+    recurse: true
+    state: directory
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+  loop:
+    - User
+    - extensions
+  loop_control:
+    loop_var: _directory
+
+- name: Copy default settings
+  ansible.builtin.template:
+    src: settings.json
+    dest: "{{ code_server_user_dir }}/User/settings.json"
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+
+- name: Create config directory in user's home
+  ansible.builtin.file:
+    path: "{{ code_server_config_dir }}/"
+    recurse: true
+    state: directory
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+
+- name: Copy configuration
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ code_server_config_dir }}/config.yaml"
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+
+- name: Download necessary extensions
+  ansible.builtin.get_url:
+    url: "{{ _code_server_extension }}"
+    dest: "{{ code_server_user_dir }}/extensions/"
+    validate_certs: no
+    owner: "{{ code_server_user_name }}"
+  loop: "{{ [code_server_base_extensions_url] | product(code_server_base_extensions) | map('join') | list | union(code_server_extension_urls) }}"
+  loop_control:
+    loop_var: _code_server_extension
+
+- name: Install extensions in given order
+  become_user: "{{ code_server_user_name }}"
+  ansible.builtin.command:
+    argv:
+      - "/bin/code-server"
+      - "--install-extension"
+      - "{{ code_server_user_dir }}/extensions/{{ _code_extension }}"
+  loop: "{{ code_server_base_extensions | union(code_server_extension_urls | map('urlsplit', 'path') | map('basename') | list) }}"
+  loop_control:
+    loop_var: _code_extension
+
+- name: Setting workspace
+  when: code_server_user_workspace_path is defined
+  block:
+    - name: Copy coder.json template
+      ansible.builtin.emplate:
+        src: coder.json.j2
+        dest: "{{ code_server_user_dir }}/coder.json"
+        owner: "{{ code_server_user_name }}"
+        mode: '0644'
+
+    - name: Create workshop/demo directories
+      ansible.builtin.file:
+        path: "{{ code_server_user_workspace_path }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ code_server_user_name }}"
+
+    - name: Clone repositories
+      when: code_server_user_workspace_repos is defined
+      become_user: "{{ code_server_user_name }}"
+      ansible.builtin.git:
+        repo: "{{ _code_server_repo.repo }}"
+        dest: "{{ code_server_user_workspace_path }}/{{ _code_server_repo.name }}"
+        version: "{{ _code_server_repo.branch | default('main') }}"
+      loop: "{{ code_server_user_workspace_repos }}"
+      loop_control:
+      loop_var: _code_server_repo
+
+- name: Enable and start code-server daemon
+  ansible.builtin.systemd:
+    enabled: true
+    state: started
+    daemon_reload: true
+    name: "code-server@{{ code_server_user_name }}"
+
+# because the code terminal isn't a login shell, it can be that podman
+# moans about no systemd user session being available
+- name: Make sure user lingers to avoid issues with podman
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ code_server_user_name }}"
