@@ -76,7 +76,7 @@
   when: code_server_user_workspace_path is defined
   block:
     - name: Copy coder.json template
-      ansible.builtin.emplate:
+      ansible.builtin.template:
         src: coder.json.j2
         dest: "{{ code_server_user_dir }}/coder.json"
         owner: "{{ code_server_user_name }}"
