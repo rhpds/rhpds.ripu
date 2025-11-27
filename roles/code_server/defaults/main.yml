@@ -4,7 +4,7 @@
 # ------------------------------------------------
 code_server_version: "4.11.0"
 code_server_rpm_url: >-
-  https://gpte-public.s3.amazonaws.com/CI+Assets/Ansible+Automation+Controller+for+Advanced+Users/code-server-{{ vscode_server_version }}-amd64.rpm
+  https://gpte-public.s3.amazonaws.com/CI+Assets/Ansible+Automation+Controller+for+Advanced+Users/code-server-{{ code_server_version }}-amd64.rpm
 
 # ------------------------------------------------
 # Code server IP and Port
