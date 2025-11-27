@@ -12,6 +12,8 @@ ansible_navigator_packages:
 ansible_navigator_username: "{{ student_name }}"
 ansible_navigator_groupname: "users"
 ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory/"
+ansible_navigator_remote_user: "{{ student_name }}"
+ansible_navigator_ssh_key_path: "~/.ssh/{{ guid }}key.pem"
 
 # ------------------------------------------------
 # Image registry
@@ -57,7 +59,7 @@ ansible_navigator_host_file_content: |
 
   [all:vars]
   timeout=60
-  ansible_user={{ remote_user }}
-  ansible_ssh_private_key_file="~/.ssh/{{ guid }}key.pem"
+  ansible_user={{ ansible_navigator_remote_user }}
+  ansible_ssh_private_key_file="{{ ansible_navigator_ssh_key_path }}"
   ansible_ssh_common_args="-o StrictHostKeyChecking=no"
   ansible_become=true
