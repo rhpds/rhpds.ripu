@@ -1,5 +1,5 @@
 [defaults]
-stdout_callback = yaml
+# stdout_callback = community.general.yaml
 connection = smart
 timeout = 60
 deprecation_warnings = False
@@ -10,7 +10,7 @@ host_key_checking = False
 collections_on_ansible_version_mismatch = ignore
 retry_files_enabled = False
 interpreter_python = auto_silent
-inventory = {{ ansible_navigator_ee_images }}/hosts
+inventory = {{ ansible_navigator_inventory_dir }}/hosts
 [persistent_connection]
 connect_timeout = 200
 command_timeout = 200

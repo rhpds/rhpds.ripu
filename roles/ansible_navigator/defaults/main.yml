@@ -11,7 +11,7 @@ ansible_navigator_packages:
 # ------------------------------------------------
 ansible_navigator_username: "{{ student_name }}"
 ansible_navigator_groupname: "users"
-ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory/"
+ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory"
 ansible_navigator_remote_user: "{{ student_name }}"
 ansible_navigator_ssh_key_path: "~/.ssh/{{ guid }}key.pem"
 
