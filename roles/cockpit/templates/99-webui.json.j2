@@ -1,5 +1,6 @@
 {
 {% for _instance in cockpit_instances %}
+    {{ "\n" }}
     "{{ _instance.name }}": {
         "visible": true,
         "color": "{{ _instance.color | default('#67d300') }}",
