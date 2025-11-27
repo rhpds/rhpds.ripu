@@ -23,7 +23,7 @@ code_server_auth_type: password
 code_server_user_dir: "/home/{{ code_server_user_name }}/.local/share/code-server"
 code_server_config_dir: "/home/{{ code_server_user_name }}/.config/code-server"
 code_server_user_name: "{{ student_name }}"
-code_user_password: "{{ common_password }}"
+code_server_user_password: "{{ common_password }}"
 code_server_group_name: users
 
 # ------------------------------------------------
