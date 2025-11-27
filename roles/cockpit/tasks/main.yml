@@ -7,8 +7,8 @@
     state: present
 
 - name: Copy cockpit.conf
-  ansible.builtin.copy:
-    src: "cockpit.conf"
+  ansible.builtin.template:
+    src: "cockpit.conf.j2"
     dest: "/etc/cockpit/cockpit.conf"
 
 - name: Setup cockpit/machines.d/99-webui.json file per student
