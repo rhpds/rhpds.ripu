@@ -18,7 +18,7 @@ ansible_navigator_ssh_key_path: "~/.ssh/{{ guid }}key.pem"
 # ------------------------------------------------
 # Image registry
 # ------------------------------------------------
-ansible_navigator_registry_name: registry.redhat.io
+ansible_navigator_registry_name: "registry.redhat.io"
 ansible_navigator_registry_username: "{{ registry_username }}"
 ansible_navigator_registry_password: "{{ registry_password }}"
 ansible_navigator_ee_images:
