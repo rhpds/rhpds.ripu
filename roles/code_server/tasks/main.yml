@@ -98,7 +98,7 @@
         version: "{{ _code_server_repo.branch | default('main') }}"
       loop: "{{ code_server_user_workspace_repos }}"
       loop_control:
-      loop_var: _code_server_repo
+        loop_var: _code_server_repo
 
 - name: Enable and start code-server daemon
   ansible.builtin.systemd:
