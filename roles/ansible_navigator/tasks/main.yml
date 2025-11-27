@@ -24,7 +24,7 @@
     state: directory
     mode: '0755'
     owner: "{{ ansible_navigator_username }}"
-    group: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_groupname }}"
 
 - name: Generate ansible inventory from template
   ansible.builtin.template:
@@ -32,14 +32,14 @@
     dest: "{{ ansible_navigator_inventory_dir }}hosts"
     mode: '0644'
     owner: "{{ ansible_navigator_username }}"
-    group: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_groupname }}"
 
 - name: Copy ansible-navigator file
   ansible.builtin.template:
     src: ansible-navigator.yml.j2
     dest: "/home/{{ ansible_navigator_username }}/.ansible-navigator.yml"
     owner: "{{ ansible_navigator_username }}"
-    group: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_groupname }}"
     mode: '0644'
 
 - name: Pull images for student

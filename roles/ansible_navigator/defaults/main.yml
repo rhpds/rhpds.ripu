@@ -10,7 +10,7 @@ ansible_navigator_packages:
 # Users and Groups
 # ------------------------------------------------
 ansible_navigator_username: "{{ student_name }}"
-ansible_navigator_groupname: "{{ student_name }}"
+ansible_navigator_groupname: "users"
 ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory/"
 
 # ------------------------------------------------
