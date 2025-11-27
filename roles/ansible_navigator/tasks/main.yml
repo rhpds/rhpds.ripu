@@ -1,0 +1,62 @@
+---
+
+# - name: Enable offline automation controller repo
+#   when: ansible_navigator_enable_offline_aap_repo | bool
+#   community.general.ini_file:
+#     path: "/etc/yum.repos.d/ansible-automation-platform.repo"
+#     section: ansible-automation-platform
+#     option: enabled
+#     value: 1
+
+- name: Install ansible core & navigator
+  ansible.builtin.dnf:
+    name: "{{ ansible_navigator_packages }}"
+    state: present
+
+- name: Install ansible.cfg in home directory
+  ansible.builtin.template:
+    src: ./templates/ansible.cfg.j2
+    dest: "/etc/ansible/ansible.cfg"
+
+- name: Create workshop inventory directories
+  ansible.builtin.file:
+    path: "{{ ansible_navigator_inventory_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_username }}"
+
+- name: Generate ansible inventory from template
+  ansible.builtin.template:
+    src: "hosts.j2"
+    dest: "{{ ansible_navigator_inventory_dir }}hosts"
+    mode: '0644'
+    owner: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_username }}"
+
+- name: Copy ansible-navigator file
+  ansible.builtin.template:
+    src: ansible-navigator.yml.j2
+    dest: "/home/{{ ansible_navigator_username }}/.ansible-navigator.yml"
+    owner: "{{ ansible_navigator_username }}"
+    group: "{{ ansible_navigator_username }}"
+    mode: '0644'
+
+- name: Pull images for student
+  become: true
+  become_user: "{{ ansible_navigator_username }}"
+  block:
+    - name: Login to image registry
+      containers.podman.podman_login:
+        registry: "{{ ansible_navigator_registry_name: }}"
+        username: "{{ ansible_navigator_registry_username }}"
+        password: "{{ ansible_navigator_registry_password }}"
+
+    - name: Pull images for student
+      become_user: "{{ ansible_navigator_username }}"
+      containers.podman.podman_image:
+        name: "{{ item.name }}"
+        pull: true
+        tag: "{{ item.tag }}"
+      retries: 5
+      loop: "{{ ansible_navigator_ee_images }}"

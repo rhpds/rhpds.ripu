@@ -1,0 +1,16 @@
+---
+ansible-navigator:
+  ansible:
+    inventory:
+      entries:
+        - {{ ansible_navigator_inventory_dir }}/hosts
+
+  execution-environment:
+    image: {{ ansible_navigator_ee_images.0.name }}:{{ ansible_navigator_ee_images.0.tag }}
+    enabled: true
+    container-engine: podman
+    pull:
+      policy: missing
+    volume-mounts:
+      - src: "/etc/ansible/"
+        dest: "/etc/ansible/"

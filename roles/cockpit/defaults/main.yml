@@ -1,0 +1,21 @@
+---
+
+cockpit_become_user: "{{ student_name }}"
+
+# ------------------------------------------------
+# Cockpit instances to setup 
+# cockpit/machines.d/99-webui.json
+# ------------------------------------------------
+cockpit_instances:
+  - name: node1
+    color: #d48a00
+    user: cloud-user
+    address: node1
+  - name: node2
+    color: #bf00d4
+    user: cloud-user
+    address: node2
+  - name: node3
+    color: #67d300
+    user: cloud-user
+    address: node3

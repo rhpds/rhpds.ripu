@@ -10,7 +10,7 @@ host_key_checking = False
 collections_on_ansible_version_mismatch = ignore
 retry_files_enabled = False
 interpreter_python = auto_silent
-inventory = /home/{{ student_name }}/lab_inventory/hosts
+inventory = {{ ansible_navigator_ee_images }}/hosts
 [persistent_connection]
 connect_timeout = 200
 command_timeout = 200

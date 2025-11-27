@@ -1,0 +1,63 @@
+---
+# ------------------------------------------------
+# Packages
+# ------------------------------------------------
+ansible_navigator_packages:
+  - ansible-core
+  - ansible-navigator
+
+# ------------------------------------------------
+# Users and Groups
+# ------------------------------------------------
+ansible_navigator_username: "{{ student_name }}"
+ansible_navigator_groupname: "{{ student_name }}"
+ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory/"
+
+# ------------------------------------------------
+# Image registry
+# ------------------------------------------------
+ansible_navigator_registry_name: registry.redhat.io
+ansible_navigator_registry_username: "{{ registry_username }}"
+ansible_navigator_registry_password: "{{ registry_password }}"
+ansible_navigator_ee_images:
+  - name: registry.redhat.io/ansible-automation-platform-20-early-access/ee-29-rhel8
+    tag: 2.0.0
+  - name: registry.redhat.io/ansible-automation-platform-20-early-access/ee-supported-rhel8
+    tag: 2.0.0
+  - name: registry.redhat.io/ansible-automation-platform-20-early-access/ee-minimal-rhel8
+    tag: 2.0.0
+
+# ------------------------------------------------
+# Ansible Host file content
+# ------------------------------------------------
+ansible_navigator_host_file_content: |
+  [web]
+  ansible-1
+  node1
+  node2
+  node3
+
+  [ALL_rhel]
+  ansible-1
+  node1
+  node2
+  node3
+
+  [control]
+  controller
+
+  [rhel7]
+  node1
+
+  [rhel8]
+  node2
+
+  [rhel9]
+  node3
+
+  [all:vars]
+  timeout=60
+  ansible_user={{ remote_user }}
+  ansible_ssh_private_key_file="~/.ssh/{{ guid }}key.pem"
+  ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+  ansible_become=true

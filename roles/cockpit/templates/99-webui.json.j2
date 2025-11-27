@@ -1,0 +1,10 @@
+{
+{% for _instance in cockpit_instances %}
+    "{{ _instance.name }}": {
+        "visible": true,
+        "color": "{{ _instance.color | default('#67d300') }}",
+        "user": "{{ _instance.user }}",
+        "address": "{{ _instance.address | default(_instance.name) }}"
+    }{% if not loop.last %},{% endif %}
+{% endfor %}{{ "\n" }}
+}
