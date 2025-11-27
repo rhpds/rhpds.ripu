@@ -48,7 +48,7 @@
   block:
     - name: Login to image registry
       containers.podman.podman_login:
-        registry: "{{ ansible_navigator_registry_name: }}"
+        registry: "{{ ansible_navigator_registry_name }}"
         username: "{{ ansible_navigator_registry_username }}"
         password: "{{ ansible_navigator_registry_password }}"
 
