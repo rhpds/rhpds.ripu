@@ -5,11 +5,6 @@
     src: motd.j2
     dest: /etc/motd
 
-# - name: Copy /etc/host
-#   ansible.builtin.template:
-#     src: etc_hosts.j2
-#     dest: /etc/hosts
-
 - name: Copy setup.yml playbook
   ansible.builtin.copy:
     src: setup.yml
