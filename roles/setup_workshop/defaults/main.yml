@@ -11,3 +11,4 @@ setup_workshop_repository: https://github.com/ansible/workshops.git
 setup_workshop_repository_version: devel
 setup_workshop_exercise_src_dir: ansible_rhel
 setup_workshop_exercise_dest_dir: rhel-workshop
+workshop_type: ripu
