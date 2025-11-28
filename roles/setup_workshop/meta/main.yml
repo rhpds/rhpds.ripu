@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  role_name: ansible_bu_setup_workshop
+  role_name: setup_workshop
   author: Mitesh Sharma (mitsharm@redhat.com)
   description: |
     Setup Ansible BU workshops

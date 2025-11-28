@@ -31,12 +31,23 @@
     enabled: true
     state: started
 
-# - name: Enable and start cockpit for all nodes
-#   ansible.builtin.service:
-#     name: cockpit.socket
-#     enabled: true
-#     state: started
-#   delegate_to: "{{ _cockpit_host.name }}"
-#   loop: "{{ cockpit_instances }}"
-#   loop_control:
-#     loop_var: _cockpit_host
+- name: Install cockpit console
+  ansible.builtin.package:
+    name: 
+      - cockpit
+      - cockpit-system
+    state: present
+  delegate_to: "{{ _cockpit_host.name }}"
+  loop: "{{ cockpit_instances }}"
+  loop_control:
+    loop_var: _cockpit_host
+
+- name: Enable and start cockpit for all nodes
+  ansible.builtin.service:
+    name: cockpit.socket
+    enabled: true
+    state: started
+  delegate_to: "{{ _cockpit_host.name }}"
+  loop: "{{ cockpit_instances }}"
+  loop_control:
+    loop_var: _cockpit_host

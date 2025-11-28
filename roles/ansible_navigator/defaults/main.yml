@@ -14,6 +14,8 @@ ansible_navigator_groupname: "users"
 ansible_navigator_inventory_dir: "/home/{{ student_name }}/lab_inventory"
 ansible_navigator_remote_user: "{{ student_name }}"
 ansible_navigator_ssh_key_path: "~/.ssh/{{ guid }}key.pem"
+ansible_navigator_controller_username: rhel
+ansible_navigator_controller_password: "ansible123!" #CHANGEME
 
 # ------------------------------------------------
 # Image registry
@@ -34,19 +36,19 @@ ansible_navigator_ee_images:
 # ------------------------------------------------
 ansible_navigator_host_file_content: |
   [web]
-  ansible-1
+  ansible-1 ansible_connection=local
   node1
   node2
   node3
 
   [ALL_rhel]
-  ansible-1
+  ansible-1 ansible_connection=local
   node1
   node2
   node3
 
   [control]
-  controller
+  controller ansible_user={{ ansible_navigator_controller_username }} ansible_password={{ ansible_navigator_controller_password }}
 
   [rhel7]
   node1

@@ -29,7 +29,7 @@
 - name: Generate ansible inventory from template
   ansible.builtin.template:
     src: "hosts.j2"
-    dest: "{{ ansible_navigator_inventory_dir }}hosts"
+    dest: "{{ ansible_navigator_inventory_dir }}/hosts"
     mode: '0644'
     owner: "{{ ansible_navigator_username }}"
     group: "{{ ansible_navigator_groupname }}"
