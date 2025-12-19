@@ -1,0 +1,117 @@
+---
+- name: Enable upgrade repositories for RIPU
+  when: enable_upgrade_repos_enabled | bool
+  block:
+    - name: Find entitlement certificate files
+      ansible.builtin.find:
+        paths: /etc/pki/entitlement
+        patterns: "*.pem"
+        excludes: "*-key.pem"
+      register: _entitlement_certs
+
+    - name: Set entitlement certificate path
+      when: _entitlement_certs.files | length > 0
+      ansible.builtin.set_fact:
+        _enable_upgrade_repos_cert: "{{ _entitlement_certs.files[0].path }}"
+        _enable_upgrade_repos_key: "{{ _entitlement_certs.files[0].path | regex_replace('\\.pem$', '-key.pem') }}"
+
+    - name: Enable RHEL 8 repos for RHEL 7 hosts (for RIPU upgrade)
+      when:
+        - ansible_distribution == "RedHat"
+        - ansible_distribution_major_version == "7"
+      ansible.builtin.copy:
+        dest: /etc/yum.repos.d/rhel8-for-ripu.repo
+        content: |
+          [rhel-8-for-x86_64-baseos-rpms]
+          name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+          baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel8/8/x86_64/baseos/os
+          enabled = 1
+          gpgcheck = 1
+          gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+          sslverify = 1
+          sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+          sslclientkey = {{ _enable_upgrade_repos_key }}
+          sslclientcert = {{ _enable_upgrade_repos_cert }}
+          metadata_expire = 1
+
+          [rhel-8-for-x86_64-appstream-rpms]
+          name = Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+          baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel8/8/x86_64/appstream/os
+          enabled = 1
+          gpgcheck = 1
+          gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+          sslverify = 1
+          sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+          sslclientkey = {{ _enable_upgrade_repos_key }}
+          sslclientcert = {{ _enable_upgrade_repos_cert }}
+          metadata_expire = 1
+        mode: '0644'
+
+    - name: Enable RHEL 9 repos for RHEL 8 hosts (for RIPU upgrade)
+      when:
+        - ansible_distribution == "RedHat"
+        - ansible_distribution_major_version == "8"
+      ansible.builtin.copy:
+        dest: /etc/yum.repos.d/rhel9-for-ripu.repo
+        content: |
+          [rhel-9-for-x86_64-baseos-rpms]
+          name = Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+          baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel9/9/x86_64/baseos/os
+          enabled = 1
+          gpgcheck = 1
+          gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+          sslverify = 1
+          sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+          sslclientkey = {{ _enable_upgrade_repos_key }}
+          sslclientcert = {{ _enable_upgrade_repos_cert }}
+          metadata_expire = 1
+
+          [rhel-9-for-x86_64-appstream-rpms]
+          name = Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+          baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel9/9/x86_64/appstream/os
+          enabled = 1
+          gpgcheck = 1
+          gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+          sslverify = 1
+          sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+          sslclientkey = {{ _enable_upgrade_repos_key }}
+          sslclientcert = {{ _enable_upgrade_repos_cert }}
+          metadata_expire = 1
+        mode: '0644'
+
+    # TODO: Enable RHEL 10 repos for RHEL 9 hosts when RHEL 10 RIPU is ready
+    # - name: Enable RHEL 10 repos for RHEL 9 hosts (for RIPU upgrade)
+    #   when:
+    #     - ansible_distribution == "RedHat"
+    #     - ansible_distribution_major_version == "9"
+    #   ansible.builtin.copy:
+    #     dest: /etc/yum.repos.d/rhel10-for-ripu.repo
+    #     content: |
+    #       [rhel-10-for-x86_64-baseos-rpms]
+    #       name = Red Hat Enterprise Linux 10 for x86_64 - BaseOS (RPMs)
+    #       baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel10/10/x86_64/baseos/os
+    #       enabled = 1
+    #       gpgcheck = 1
+    #       gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+    #       sslverify = 1
+    #       sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+    #       sslclientkey = {{ _enable_upgrade_repos_key }}
+    #       sslclientcert = {{ _enable_upgrade_repos_cert }}
+    #       metadata_expire = 1
+    #
+    #       [rhel-10-for-x86_64-appstream-rpms]
+    #       name = Red Hat Enterprise Linux 10 for x86_64 - AppStream (RPMs)
+    #       baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/ansible-aap2-rhel-in-place/content/dist/rhel10/10/x86_64/appstream/os
+    #       enabled = 1
+    #       gpgcheck = 1
+    #       gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+    #       sslverify = 1
+    #       sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+    #       sslclientkey = {{ _enable_upgrade_repos_key }}
+    #       sslclientcert = {{ _enable_upgrade_repos_cert }}
+    #       metadata_expire = 1
+    #     mode: '0644'
+
+    - name: Clean yum cache after adding upgrade repos
+      ansible.builtin.command: yum clean all
+      changed_when: true

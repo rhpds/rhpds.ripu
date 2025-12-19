@@ -1,0 +1,3 @@
+---
+# Enable upgrade repos by default
+enable_upgrade_repos_enabled: true
