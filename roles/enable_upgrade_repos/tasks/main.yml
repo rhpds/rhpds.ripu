@@ -34,7 +34,7 @@
           [rhel-8-for-x86_64-baseos-rpms]
           name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel8/8/x86_64/baseos/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -46,7 +46,7 @@
           [rhel-8-for-x86_64-appstream-rpms]
           name = Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel8/8/x86_64/appstream/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -66,7 +66,7 @@
           [rhel-9-for-x86_64-baseos-rpms]
           name = Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel9/9/x86_64/baseos/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -78,7 +78,7 @@
           [rhel-9-for-x86_64-appstream-rpms]
           name = Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel9/9/x86_64/appstream/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -98,7 +98,7 @@
           [rhel-10-for-x86_64-baseos-rpms]
           name = Red Hat Enterprise Linux 10 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel10/10/x86_64/baseos/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -110,7 +110,7 @@
           [rhel-10-for-x86_64-appstream-rpms]
           name = Red Hat Enterprise Linux 10 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel10/10/x86_64/appstream/os
-          enabled = 0
+          enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
           gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
           sslverify = 1
@@ -123,3 +123,41 @@
     - name: Clean yum cache after adding upgrade repos
       ansible.builtin.command: yum clean all
       changed_when: true
+
+    # Verification block for RHEL 10 repos - retry if not immediately available
+    - name: Verify RHEL 10 upgrade repos are accessible (RHEL 9 hosts only)
+      when:
+        - enable_upgrade_repos_verify_rhel10 | bool
+        - ansible_distribution == "RedHat"
+        - ansible_distribution_major_version == "9"
+      block:
+        - name: Test RHEL 10 repo access (with retry)
+          ansible.builtin.shell: |
+            yum --enablerepo=rhel-10-for-x86_64-baseos-rpms repoinfo rhel-10-for-x86_64-baseos-rpms 2>&1 | grep -i "Total packages" | awk '{print $NF}'
+          register: _rhel10_repo_check
+          until: _rhel10_repo_check.stdout | int > 0
+          retries: "{{ enable_upgrade_repos_verify_retries }}"
+          delay: "{{ enable_upgrade_repos_verify_delay }}"
+          failed_when: false
+          changed_when: false
+
+        - name: Refresh subscription and retry if RHEL 10 repo is empty
+          when: _rhel10_repo_check.stdout | default('0') | int == 0
+          block:
+            - name: Refresh subscription manager
+              ansible.builtin.command: subscription-manager refresh
+              changed_when: true
+
+            - name: Clean yum cache after subscription refresh
+              ansible.builtin.command: yum clean all
+              changed_when: true
+
+            - name: Final verification of RHEL 10 repo
+              ansible.builtin.shell: |
+                yum --enablerepo=rhel-10-for-x86_64-baseos-rpms repoinfo rhel-10-for-x86_64-baseos-rpms 2>&1 | grep -i "Total packages"
+              register: _rhel10_final_check
+              changed_when: false
+
+            - name: Display RHEL 10 repo status
+              ansible.builtin.debug:
+                msg: "RHEL 10 repo status: {{ _rhel10_final_check.stdout }}"

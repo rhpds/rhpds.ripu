@@ -1,3 +1,13 @@
 ---
-# Enable upgrade repos by default
+# Enable the role to create upgrade repos
 enable_upgrade_repos_enabled: true
+
+# Set repos as enabled (1) or disabled (0) in repo file
+# Disabled repos (0) are better for leapp - enable on demand with --enablerepo
+# Enabled repos (1) will be used for all yum operations
+enable_upgrade_repos_state: 0
+
+# Retry verification for RHEL 10 repos (they may need time to sync after Satellite publish)
+enable_upgrade_repos_verify_rhel10: true
+enable_upgrade_repos_verify_retries: 3
+enable_upgrade_repos_verify_delay: 10
