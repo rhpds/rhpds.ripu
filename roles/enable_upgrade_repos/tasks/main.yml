@@ -31,8 +31,8 @@
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel8-for-ripu.repo
         content: |
-          [rhel-8-for-x86_64-baseos-rpms]
-          name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+          [ripu-upgrade-rhel-8-baseos]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel8/8/x86_64/baseos/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -43,8 +43,8 @@
           sslclientcert = {{ _enable_upgrade_repos_cert }}
           metadata_expire = 1
 
-          [rhel-8-for-x86_64-appstream-rpms]
-          name = Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+          [ripu-upgrade-rhel-8-appstream]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel8/8/x86_64/appstream/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -63,8 +63,8 @@
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel9-for-ripu.repo
         content: |
-          [rhel-9-for-x86_64-baseos-rpms]
-          name = Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+          [ripu-upgrade-rhel-9-baseos]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel9/9/x86_64/baseos/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -75,8 +75,8 @@
           sslclientcert = {{ _enable_upgrade_repos_cert }}
           metadata_expire = 1
 
-          [rhel-9-for-x86_64-appstream-rpms]
-          name = Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+          [ripu-upgrade-rhel-9-appstream]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel9/9/x86_64/appstream/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -95,8 +95,8 @@
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel10-for-ripu.repo
         content: |
-          [rhel-10-for-x86_64-baseos-rpms]
-          name = Red Hat Enterprise Linux 10 for x86_64 - BaseOS (RPMs)
+          [ripu-upgrade-rhel-10-baseos]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 10 for x86_64 - BaseOS (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel10/10/x86_64/baseos/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -107,8 +107,8 @@
           sslclientcert = {{ _enable_upgrade_repos_cert }}
           metadata_expire = 1
 
-          [rhel-10-for-x86_64-appstream-rpms]
-          name = Red Hat Enterprise Linux 10 for x86_64 - AppStream (RPMs)
+          [ripu-upgrade-rhel-10-appstream]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 10 for x86_64 - AppStream (RPMs)
           baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel10/10/x86_64/appstream/os
           enabled = {{ enable_upgrade_repos_state }}
           gpgcheck = 1
@@ -133,7 +133,7 @@
       block:
         - name: Test RHEL 10 repo access (with retry)
           ansible.builtin.shell: |
-            yum --enablerepo=rhel-10-for-x86_64-baseos-rpms repoinfo rhel-10-for-x86_64-baseos-rpms 2>&1 | grep -i "Total packages" | awk '{print $NF}'
+            yum --enablerepo=ripu-upgrade-rhel-10-baseos repoinfo ripu-upgrade-rhel-10-baseos 2>&1 | grep -i "Total packages" | awk '{print $NF}'
           register: _rhel10_repo_check
           until: _rhel10_repo_check.stdout | int > 0
           retries: "{{ enable_upgrade_repos_verify_retries }}"
@@ -154,7 +154,7 @@
 
             - name: Final verification of RHEL 10 repo
               ansible.builtin.shell: |
-                yum --enablerepo=rhel-10-for-x86_64-baseos-rpms repoinfo rhel-10-for-x86_64-baseos-rpms 2>&1 | grep -i "Total packages"
+                yum --enablerepo=ripu-upgrade-rhel-10-baseos repoinfo ripu-upgrade-rhel-10-baseos 2>&1 | grep -i "Total packages"
               register: _rhel10_final_check
               changed_when: false
 
