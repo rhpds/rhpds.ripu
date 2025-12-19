@@ -8,7 +8,7 @@ This role enables access to higher RHEL version repositories on hosts to support
 
 - RHEL 7 hosts → enables RHEL 8 repos
 - RHEL 8 hosts → enables RHEL 9 repos
-- RHEL 9 hosts → RHEL 10 support (commented out, pending RHEL 10 RIPU availability)
+- RHEL 9 hosts → enables RHEL 10 repos
 
 ## Requirements
 
