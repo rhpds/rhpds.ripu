@@ -118,6 +118,18 @@
           sslclientkey = {{ _enable_upgrade_repos_key }}
           sslclientcert = {{ _enable_upgrade_repos_cert }}
           metadata_expire = 1
+
+          [ripu-upgrade-rhel-10-supplementary]
+          name = RIPU Upgrade - Red Hat Enterprise Linux 10 for x86_64 - Supplementary (RPMs)
+          baseurl = https://{{ host_satellite_repositories_hostname }}/pulp/repos/{{ host_satellite_repositories_org }}/Library/{{ _content_view_name }}/content/dist/rhel10/10/x86_64/supplementary/os
+          enabled = {{ enable_upgrade_repos_state }}
+          gpgcheck = 1
+          gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+          sslverify = 1
+          sslcacert = /etc/rhsm/ca/katello-server-ca.pem
+          sslclientkey = {{ _enable_upgrade_repos_key }}
+          sslclientcert = {{ _enable_upgrade_repos_cert }}
+          metadata_expire = 1
         mode: '0644'
 
     - name: Clean yum cache after adding upgrade repos
