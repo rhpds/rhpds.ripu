@@ -45,6 +45,7 @@
       - cockpit
       - cockpit-system
     state: present
+    use: "{{ hostvars[_cockpit_host.name]['ansible_pkg_mgr'] }}"
   delegate_to: "{{ _cockpit_host.name }}"
   loop: "{{ cockpit_instances }}"
   loop_control:
