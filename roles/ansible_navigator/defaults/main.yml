@@ -35,29 +35,30 @@ ansible_navigator_ee_images:
 # Ansible Host file content
 # ------------------------------------------------
 ansible_navigator_host_file_content: |
-  [web]
+  [bastion]
   ansible-1 ansible_connection=local
-  node1
-  node2
-  node3
-
-  [ALL_rhel]
-  ansible-1 ansible_connection=local
-  node1
-  node2
-  node3
 
   [control]
   controller ansible_user={{ ansible_navigator_controller_username }} ansible_password={{ ansible_navigator_controller_password }}
 
+  [web]
+  "{{ node1_instance_name | default('node1') }}"
+  "{{ node2_instance_name | default('node2') }}"
+  "{{ node3_instance_name | default('node3') }}"
+
+  [ALL_rhel]
+  "{{ node1_instance_name | default('node1') }}"
+  "{{ node2_instance_name | default('node2') }}"
+  "{{ node3_instance_name | default('node3') }}"
+
   [rhel7]
-  node1
+  "{{ node1_instance_name | default('node1') }}"
 
   [rhel8]
-  node2
+  "{{ node2_instance_name | default('node2') }}"
 
   [rhel9]
-  node3
+  "{{ node3_instance_name | default('node3') }}"
 
   [all:vars]
   timeout=60
