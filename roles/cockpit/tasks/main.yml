@@ -1,4 +1,8 @@
 ---
+- name: Show me everything
+  ansible.builtin.debug:
+    msg: "{{ vars }}"
+
 - name: Install cockpit console
   ansible.builtin.package:
     name: 
