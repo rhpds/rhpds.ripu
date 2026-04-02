@@ -1,8 +1,4 @@
 ---
-- name: Show me everything
-  ansible.builtin.debug:
-    msg: "{{ vars }}"
-
 - name: Install cockpit console
   ansible.builtin.package:
     name: 
@@ -35,7 +31,15 @@
     enabled: true
     state: started
 
-- name: Install cockpit console
+- name: Gathered facts for delegated hosts
+  ansible.builtin.setup:
+  delegate_to: "{{ _cockpit_host.name }}"
+  delegate_facts: true
+  loop: "{{ cockpit_instances }}"
+  loop_control:
+    loop_var: _cockpit_host
+
+- name: Install cockpit console for all nodes
   ansible.builtin.package:
     name: 
       - cockpit
