@@ -7,15 +7,15 @@ cockpit_become_user: "{{ student_name }}"
 # cockpit/machines.d/99-webui.json
 # ------------------------------------------------
 cockpit_instances:
-  - name: node1
+  - name: "{{ node1_instance_name | default('node1') }}"
     color: "#d48a00"
     user: cloud-user
-    address: node1
-  - name: node2
+    address: "{{ node1_instance_name | default('node1') }}"
+  - name: "{{ node2_instance_name | default('node2') }}"
     color: "#bf00d4"
     user: cloud-user
-    address: node2
-  - name: node3
+    address: "{{ node2_instance_name | default('node2') }}"
+  - name: "{{ node3_instance_name | default('node3') }}"
     color: "#67d300"
     user: cloud-user
-    address: node3
+    address: "{{ node3_instance_name | default('node3') }}"
