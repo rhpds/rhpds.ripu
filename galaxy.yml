@@ -1,15 +1,16 @@
 namespace: rhpds
 name: ripu
-version: 1.0.0
+version: 1.0.1
 readme: README.md
 authors:
-- Mitesh, The Mouse <mitsharm@redhat.com>
+  - Mitesh, The Mouse <mitsharm@redhat.com>
 description: your collection description
 license:
-- GPL-2.0-or-later
+  - GPL-2.0-or-later
 license_file: ''
 tags: []
-dependencies: {}
+dependencies:
+  "containers.podman": ">=1.19.0"
 repository: https://github.com/rhpds/rhpds.ripu
 documentation: https://github.com/rhpds/rhpds.ripu
 homepage: https://github.com/rhpds/rhpds.ripu
