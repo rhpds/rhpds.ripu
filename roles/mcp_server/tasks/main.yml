@@ -17,20 +17,20 @@
   containers.podman.podman_image:
     name: "{{ mcp_server_image }}"
 
-- name: Run MCP server container
+- name: Deploy MCP server as systemd service via Quadlet
   when: mcp_server_enabled | bool
   become: true
-  containers.podman.podman_container:
+  containers.podman.podman_quadlet:
     name: "{{ mcp_server_container_name }}"
     image: "{{ mcp_server_image }}"
     state: started
-    restart_policy: always
     env:
       BASE_URL: "{{ mcp_server_aap_url }}"
       IGNORE_CERTIFICATE_ERRORS: "{{ mcp_server_ignore_cert_errors }}"
       ALLOW_WRITE_OPERATIONS: "{{ mcp_server_allow_write_operations }}"
     ports:
       - "{{ mcp_server_port }}:3000"
+    restart_policy: always
 
 - name: Wait for MCP server health check
   when: mcp_server_enabled | bool
