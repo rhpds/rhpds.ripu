@@ -30,11 +30,14 @@
       ALLOW_WRITE_OPERATIONS: "{{ mcp_server_allow_write_operations }}"
     ports:
       - "{{ mcp_server_port }}:3000"
-    restart_policy: always
     quadlet_options:
       - "AutoUpdate=registry"
       - "Pull=newer"
       - |
+        [Service]
+        Restart=on-failure
+        RestartSec=30
+
         [Install]
         WantedBy=default.target
 
