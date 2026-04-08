@@ -36,6 +36,14 @@
     group: "{{ code_server_group_name }}"
     mode: "0700"
 
+- name: Place Claude settings.json for extension authentication
+  ansible.builtin.template:
+    src: claude-settings.json.j2
+    dest: "/home/{{ code_server_user_name }}/.claude/settings.json"
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+    mode: "0600"
+
 - name: Set Claude CLI environment variables in .bashrc
   ansible.builtin.blockinfile:
     path: "/home/{{ code_server_user_name }}/.bashrc"
