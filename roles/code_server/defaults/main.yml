@@ -92,3 +92,16 @@ code_server_claude_npm_package: "@anthropic-ai/claude-code"
 # API configuration - set these in catalog YAML
 code_server_claude_api_base_url: ""
 code_server_claude_api_key: ""
+
+# ------------------------------------------------
+# AI API proxy (optional)
+# Strips unsupported anthropic-beta headers for
+# compatibility with Vertex AI, MaaS, etc.
+# ------------------------------------------------
+code_server_install_ai_proxy: false
+code_server_proxy_port: 4010
+code_server_proxy_upstream_url: ""
+code_server_proxy_upstream_api_key: ""
+code_server_proxy_blocked_betas:
+  - prompt-caching-scope-2026-01-05
+  - redact-thinking-2026-02-12

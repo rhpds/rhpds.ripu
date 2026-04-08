@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+# {{ ansible_managed }}
+# API proxy that strips unsupported anthropic-beta headers
+# Runs on localhost:{{ code_server_proxy_port }}
+
+import json
+import os
+from aiohttp import web, ClientSession, TCPConnector
+
+UPSTREAM = os.environ["AI_PROXY_UPSTREAM_URL"]
+API_KEY = os.environ["AI_PROXY_API_KEY"]
+BLOCKED_BETAS = {{ code_server_proxy_blocked_betas | to_json }}
+PROXY_PORT = {{ code_server_proxy_port }}
+
+
+async def proxy_handler(request):
+    """Strip unsupported anthropic-beta headers and forward to upstream"""
+    path = request.match_info["path"]
+    qs = request.query_string
+    url = f"{UPSTREAM}/{path}{'?' + qs if qs else ''}"
+
+    headers = {}
+    for k, v in request.headers.items():
+        low = k.lower()
+        if low in ("host", "transfer-encoding"):
+            continue
+        if low == "anthropic-beta":
+            # Strip blocked beta headers
+            cleaned = [
+                b.strip() for b in v.split(",")
+                if b.strip() not in BLOCKED_BETAS
+            ]
+            if cleaned:
+                headers[k] = ",".join(cleaned)
+            continue
+        headers[k] = v
+
+    body = await request.read()
+
+    async with ClientSession(connector=TCPConnector(ssl=False)) as s:
+        async with s.request(request.method, url, headers=headers, data=body) as resp:
+            out = web.StreamResponse(status=resp.status)
+            for k, v in resp.headers.items():
+                if k.lower() not in ("transfer-encoding", "content-encoding", "content-length"):
+                    out.headers[k] = v
+            await out.prepare(request)
+            async for chunk in resp.content.iter_any():
+                await out.write(chunk)
+            await out.write_eof()
+            return out
+
+
+if __name__ == "__main__":
+    import asyncio
+    app = web.Application()
+    app.router.add_route("*", "/{path:.*}", proxy_handler)
+    web.run_app(app, host="127.0.0.1", port=PROXY_PORT)

@@ -1,0 +1,13 @@
+[Unit]
+Description=AI API Proxy (strips unsupported headers)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/ai-proxy/api-proxy.py
+EnvironmentFile=/opt/ai-proxy/credentials.env
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

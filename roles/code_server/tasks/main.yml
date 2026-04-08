@@ -116,3 +116,7 @@
 - name: Install Claude CLI for terminal usage
   when: code_server_install_claude_cli | bool
   ansible.builtin.include_tasks: claude_cli.yml
+
+- name: Install AI API proxy to strip unsupported headers
+  when: code_server_install_ai_proxy | bool
+  ansible.builtin.include_tasks: ai_proxy.yml
