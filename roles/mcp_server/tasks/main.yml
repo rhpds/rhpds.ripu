@@ -39,6 +39,8 @@
         WantedBy=default.target
 
 - name: Enable and start MCP server
+  when: mcp_server_enabled | bool
+  become: true
   ansible.builtin.systemd:
     name: "{{ mcp_server_container_name }}.service"
     daemon_reload: true
