@@ -112,3 +112,7 @@
 - name: Make sure user lingers to avoid issues with podman
   ansible.builtin.command:
     cmd: "loginctl enable-linger {{ code_server_user_name }}"
+
+- name: Install Claude CLI for terminal usage
+  when: code_server_install_claude_cli | bool
+  ansible.builtin.include_tasks: claude_cli.yml

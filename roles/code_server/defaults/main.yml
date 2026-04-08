@@ -81,3 +81,14 @@ code_server_additional_settings: |
 #   - repo: "{{ eda_gitea_repo_url }}"
 #     name: eda-rulebooks
 #     branch: main
+
+# ------------------------------------------------
+# Claude CLI installation (optional)
+# ------------------------------------------------
+code_server_install_claude_cli: false
+code_server_claude_nvm_version: "0.40.1"
+code_server_claude_node_version: "20"
+code_server_claude_npm_package: "@anthropic-ai/claude-code"
+# API configuration - set these in catalog YAML
+code_server_claude_api_base_url: ""
+code_server_claude_api_key: ""

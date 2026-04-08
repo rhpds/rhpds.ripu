@@ -1,0 +1,50 @@
+---
+# Install Claude CLI for terminal usage
+# Requires nvm, Node.js, and the @anthropic-ai/claude-code npm package
+
+- name: Install nvm for Claude CLI
+  become_user: "{{ code_server_user_name }}"
+  ansible.builtin.shell:
+    cmd: >-
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ code_server_claude_nvm_version }}/install.sh | bash
+    creates: "/home/{{ code_server_user_name }}/.nvm/nvm.sh"
+
+- name: Install Node.js via nvm
+  become_user: "{{ code_server_user_name }}"
+  ansible.builtin.shell:
+    cmd: >-
+      source /home/{{ code_server_user_name }}/.nvm/nvm.sh &&
+      nvm install {{ code_server_claude_node_version }}
+    executable: /bin/bash
+    creates: "/home/{{ code_server_user_name }}/.nvm/versions/node"
+
+- name: Install Claude Code CLI via npm
+  become_user: "{{ code_server_user_name }}"
+  ansible.builtin.shell:
+    cmd: >-
+      source /home/{{ code_server_user_name }}/.nvm/nvm.sh &&
+      npm install -g {{ code_server_claude_npm_package }}
+    executable: /bin/bash
+  register: _claude_cli_install
+  changed_when: "'added' in _claude_cli_install.stdout"
+
+- name: Create .claude directory
+  ansible.builtin.file:
+    path: "/home/{{ code_server_user_name }}/.claude"
+    state: directory
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+    mode: "0700"
+
+- name: Set Claude CLI environment variables in .bashrc
+  ansible.builtin.blockinfile:
+    path: "/home/{{ code_server_user_name }}/.bashrc"
+    marker: "# {mark} CLAUDE CODE ENV"
+    block: |
+      export ANTHROPIC_BASE_URL="{{ code_server_claude_api_base_url }}"
+      export ANTHROPIC_API_KEY="{{ code_server_claude_api_key }}"
+      # Add nvm to PATH for Claude CLI
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
