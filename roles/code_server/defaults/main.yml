@@ -2,9 +2,9 @@
 # ------------------------------------------------
 # RPM url
 # ------------------------------------------------
-code_server_version: "4.11.0"
+code_server_version: "4.112.0"
 code_server_rpm_url: >-
-  https://gpte-public.s3.amazonaws.com/CI+Assets/Ansible+Automation+Controller+for+Advanced+Users/code-server-{{ code_server_version }}-amd64.rpm
+  https://github.com/coder/code-server/releases/download/v{{ code_server_version }}/code-server-{{ code_server_version }}-amd64.rpm
 
 # ------------------------------------------------
 # Code server IP and Port
