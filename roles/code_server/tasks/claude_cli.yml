@@ -28,6 +28,42 @@
   register: _claude_cli_install
   changed_when: "'added' in _claude_cli_install.stdout"
 
+- name: Pre-install mcp-remote to avoid cold-start download
+  when: code_server_mcp_server_url | default('') | length > 0
+  become_user: "{{ code_server_user_name }}"
+  ansible.builtin.shell:
+    cmd: >-
+      source /home/{{ code_server_user_name }}/.nvm/nvm.sh &&
+      npm install -g mcp-remote@{{ code_server_mcp_remote_version }}
+    executable: /bin/bash
+  register: _mcp_remote_install
+  changed_when: "'added' in _mcp_remote_install.stdout"
+
+- name: Create AAP gateway token for MCP authentication
+  when:
+    - code_server_mcp_server_url | default('') | length > 0
+    - code_server_mcp_token | default('') | length == 0
+  environment:
+    GATEWAY_HOSTNAME: "{{ code_server_aap_gateway_host }}"
+    GATEWAY_USERNAME: "{{ code_server_aap_gateway_username }}"
+    GATEWAY_PASSWORD: "{{ code_server_aap_gateway_password }}"
+    GATEWAY_VERIFY_SSL: "{{ code_server_aap_gateway_verify_ssl }}"
+  ansible.platform.token:
+    description: MCP server authentication token
+    scope: write
+    state: present
+  register: _gateway_token_result
+  until: _gateway_token_result is not failed
+  retries: 30
+  delay: 10
+
+- name: Set MCP token from gateway response
+  when:
+    - _gateway_token_result is defined
+    - _gateway_token_result is not skipped
+  ansible.builtin.set_fact:
+    code_server_mcp_token: "{{ _gateway_token_result.ansible_facts.aap_token.token }}"
+
 - name: Create .claude directory
   ansible.builtin.file:
     path: "/home/{{ code_server_user_name }}/.claude"

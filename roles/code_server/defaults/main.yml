@@ -94,6 +94,13 @@ code_server_claude_api_base_url: ""
 code_server_claude_api_key: ""
 # MCP server connection - set in catalog YAML to enable
 code_server_mcp_server_url: ""
+code_server_mcp_remote_version: "0.1.38"
+# AAP gateway connection for MCP token generation
+code_server_aap_gateway_host: ""
+code_server_aap_gateway_username: ""
+code_server_aap_gateway_password: ""
+code_server_aap_gateway_verify_ssl: "false"
+code_server_mcp_token: ""
 
 # ------------------------------------------------
 # AI API proxy (optional)
