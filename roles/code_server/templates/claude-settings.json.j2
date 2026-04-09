@@ -3,5 +3,11 @@
     "ANTHROPIC_BASE_URL": "{{ code_server_claude_api_base_url }}",
     "ANTHROPIC_API_KEY": "{{ code_server_claude_api_key }}"
   },
-  "mcpServers": {}
+  "mcpServers": {
+{% if code_server_mcp_server_url is defined and code_server_mcp_server_url | length > 0 %}
+    "ansible-automation-platform": {
+      "url": "{{ code_server_mcp_server_url }}"
+    }
+{% endif %}
+  }
 }
