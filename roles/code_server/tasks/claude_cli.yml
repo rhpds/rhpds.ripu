@@ -72,10 +72,18 @@
     group: "{{ code_server_group_name }}"
     mode: "0700"
 
-- name: Place Claude settings.json for extension authentication
+- name: Place Claude settings.json (env vars and permissions)
   ansible.builtin.template:
     src: claude-settings.json.j2
     dest: "/home/{{ code_server_user_name }}/.claude/settings.json"
+    owner: "{{ code_server_user_name }}"
+    group: "{{ code_server_group_name }}"
+    mode: "0600"
+
+- name: Place Claude .claude.json (MCP servers and onboarding)
+  ansible.builtin.template:
+    src: claude-mcp.json.j2
+    dest: "/home/{{ code_server_user_name }}/.claude.json"
     owner: "{{ code_server_user_name }}"
     group: "{{ code_server_group_name }}"
     mode: "0600"

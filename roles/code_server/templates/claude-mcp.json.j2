@@ -1,0 +1,33 @@
+{
+  "hasCompletedOnboarding": true,
+  "customApiKeyResponses": {
+{% if (code_server_claude_api_key | trim | length) > 5 %}
+    "approved": ["{{ (code_server_claude_api_key | trim)[5:] }}"],
+{% else %}
+    "approved": [],
+{% endif %}
+    "rejected": []
+  },
+  "mcpServers": {
+{% if code_server_mcp_server_url is defined and code_server_mcp_server_url | length > 0 %}
+{% set _toolsets = ['job_management', 'inventory_management', 'system_monitoring', 'user_management', 'security_compliance', 'platform_configuration'] %}
+{% set _names = ['aap-job-mgmt', 'aap-inventory', 'aap-monitoring', 'aap-user-mgmt', 'aap-security', 'aap-config'] %}
+{% for i in range(_toolsets | length) %}
+    "{{ _names[i] }}": {
+      "command": "/home/{{ code_server_user_name }}/.nvm/nvm-exec",
+      "args": [
+        "npx",
+        "-y",
+        "mcp-remote@{{ code_server_mcp_remote_version }}",
+        "{{ code_server_mcp_server_url }}/{{ _toolsets[i] }}",
+        "--header",
+        "Authorization: Bearer {{ code_server_mcp_token }}"
+      ],
+      "env": {
+        "NODE_VERSION": "{{ code_server_claude_node_version }}"
+      }
+    }{{ "," if not loop.last else "" }}
+{% endfor %}
+{% endif %}
+  }
+}
