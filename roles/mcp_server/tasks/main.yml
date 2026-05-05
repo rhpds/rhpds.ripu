@@ -1,0 +1,61 @@
+---
+# Role: mcp_server
+# Runs the AAP MCP server as a standalone container on the bastion,
+# connecting to a remote AAP controller instance.
+
+- name: Log in to registry.redhat.io
+  when: mcp_server_enabled | bool
+  become: true
+  containers.podman.podman_login:
+    registry: registry.redhat.io
+    username: "{{ mcp_server_registry_username }}"
+    password: "{{ mcp_server_registry_password }}"
+
+- name: Pull MCP server container image
+  when: mcp_server_enabled | bool
+  become: true
+  containers.podman.podman_image:
+    name: "{{ mcp_server_image }}"
+
+- name: MCP server as systemd service via Quadlet
+  when: mcp_server_enabled | bool
+  become: true
+  containers.podman.podman_container:
+    name: "{{ mcp_server_container_name }}"
+    image: "{{ mcp_server_image }}"
+    state: quadlet
+    env:
+      BASE_URL: "{{ mcp_server_aap_url }}"
+      IGNORE_CERTIFICATE_ERRORS: "{{ mcp_server_ignore_cert_errors }}"
+      ALLOW_WRITE_OPERATIONS: "{{ mcp_server_allow_write_operations }}"
+    ports:
+      - "{{ mcp_server_port }}:3000"
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - "Pull=newer"
+      - |
+        [Service]
+        Restart=on-failure
+        RestartSec=30
+
+        [Install]
+        WantedBy=default.target
+
+- name: Enable and start MCP server
+  when: mcp_server_enabled | bool
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ mcp_server_container_name }}.service"
+    daemon_reload: true
+    enabled: true
+    state: restarted
+
+- name: Wait for MCP server health check
+  when: mcp_server_enabled | bool
+  ansible.builtin.uri:
+    url: "http://localhost:{{ mcp_server_port }}/api/v1/health"
+    return_content: true
+  register: mcp_health
+  retries: 12
+  delay: 5
+  until: mcp_health.status == 200

@@ -1,0 +1,18 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "{{ code_server_claude_api_base_url }}",
+    "ANTHROPIC_API_KEY": "{{ code_server_claude_api_key }}"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(ansible-navigator:*)",
+      "Bash(ansible-playbook:*)",
+      "Bash(ansible-lint:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)"
+    ]
+  }
+}
