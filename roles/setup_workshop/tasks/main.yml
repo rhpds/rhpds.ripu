@@ -20,7 +20,7 @@
 
 - name: Copy rhel-workshop to users home
   ansible.builtin.copy:
-    src: "/tmp/workshops/exercises/{{ setup_workshop_exercise_src_dir }}/"
+    src: "/tmp/workshops/{{ setup_workshop_exercise_src_dir }}/"
     dest: "{{ setup_workshop_username_home }}/{{ setup_workshop_exercise_dest_dir }}/"
     remote_src: true
     owner: "{{ setup_workshop_username }}"
