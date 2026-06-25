@@ -24,10 +24,10 @@
       ansible.builtin.set_fact:
         _content_view_name: "{{ (_redhat_repo_content.content | b64decode | regex_search('pulp/repos/' + host_satellite_repositories_org + '/Library/([^/]+)/', '\\1'))[0] }}"
 
-    - name: Enable RHEL 8 repos for RHEL 7 hosts (for RIPU upgrade)
+    - name: Configure RHEL 8 repos for RIPU upgrade
       when:
         - ansible_distribution == "RedHat"
-        - ansible_distribution_major_version == "7"
+        - ansible_distribution_major_version | int == 7
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel8-for-ripu.repo
         content: |
@@ -56,10 +56,10 @@
           metadata_expire = 1
         mode: '0644'
 
-    - name: Enable RHEL 9 repos for RHEL 8 hosts (for RIPU upgrade)
+    - name: Configure RHEL 9 repos for RIPU upgrade
       when:
         - ansible_distribution == "RedHat"
-        - ansible_distribution_major_version == "8"
+        - ansible_distribution_major_version | int in [7, 8]
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel9-for-ripu.repo
         content: |
@@ -88,10 +88,9 @@
           metadata_expire = 1
         mode: '0644'
 
-    - name: Enable RHEL 10 repos for RHEL 9 hosts (for RIPU upgrade)
+    - name: Configure RHEL 10 repos for RIPU upgrade
       when:
         - ansible_distribution == "RedHat"
-        - ansible_distribution_major_version == "9"
       ansible.builtin.copy:
         dest: /etc/yum.repos.d/rhel10-for-ripu.repo
         content: |
@@ -141,7 +140,7 @@
       when:
         - enable_upgrade_repos_verify_rhel10 | bool
         - ansible_distribution == "RedHat"
-        - ansible_distribution_major_version == "9"
+        - ansible_distribution_major_version | int == 9
       block:
         - name: Test RHEL 10 repo access (with retry)
           ansible.builtin.shell: |

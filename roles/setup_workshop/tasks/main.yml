@@ -31,4 +31,11 @@
   ansible.builtin.file:
     path: "/tmp/workshops"
     state: absent
+
+- name: Copy AI context
+  ansible.builtin.copy:
+    src: ipu-workshop-claude.md
+    dest: "{{ setup_workshop_username_home }}/{{ setup_workshop_exercise_dest_dir }}/CLAUDE.md"
+    owner: "{{ setup_workshop_username }}"
+    group: "{{ setup_workshop_groupname }}"
 ...
