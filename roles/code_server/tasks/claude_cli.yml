@@ -95,6 +95,7 @@
     block: |
       export ANTHROPIC_BASE_URL="{{ code_server_claude_api_base_url }}"
       export ANTHROPIC_API_KEY="{{ code_server_claude_api_key }}"
+      export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
       # Add nvm to PATH for Claude CLI
       export NVM_DIR="$HOME/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
