@@ -62,6 +62,30 @@ Never report any workshop host as "already current" — RHEL 9 hosts can and sho
 
 Snapshot and rollback automation is fully functional. The warning in `3.2-rollback/README.adoc` about snapshots not being deployed has been resolved. Guide users through the full Section 3 rollback exercises with confidence.
 
+## Reading Analysis Job Results
+
+**A successful `AUTO / 01 Analysis` job does NOT mean the hosts are clear of inhibitors.** Job success only means the Leapp report was generated successfully. Always read the job output to check for inhibitors.
+
+Job logs are large. Use the `jobs_stdout_retrieve` MCP tool with `format=json`, save the result, then use Python to extract inhibitor findings:
+
+```python
+import json, re
+
+with open('<saved-output-file>') as f:
+    data = json.load(f)
+
+content = data.get('content', '')
+lines = content.split('\n')
+for i, line in enumerate(lines):
+    clean = re.sub(r'\x1b\[[0-9;]*m', '', line)
+    if re.search(r'inhibitor|INHIBITOR|inhibit', clean, re.IGNORECASE):
+        print(f'Line {i}: {clean}')
+```
+
+Key indicators in the output:
+- `"SUCCESS: No inhibitors found."` — host is clear
+- `"WARNING: Inhibitors found."` — host has blockers; list the inhibitor titles and summaries for the user
+
 ## Interaction Guidelines
 
 - **Always ask for confirmation before launching any AAP job template.** Explain what you are about to launch, then wait for the user to confirm.
