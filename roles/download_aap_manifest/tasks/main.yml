@@ -5,3 +5,4 @@
     dest: "{{ download_aap_manifest_dest }}"
     mode: "0600"
   delegate_to: localhost
+  become: false
