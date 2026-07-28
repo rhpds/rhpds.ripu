@@ -49,6 +49,10 @@
     GATEWAY_PASSWORD: "{{ code_server_aap_gateway_password }}"
     GATEWAY_VERIFY_SSL: "{{ code_server_aap_gateway_verify_ssl }}"
   ansible.platform.token:
+    host: "{{ code_server_aap_gateway_host }}"
+    username: "{{ code_server_aap_gateway_username }}"
+    password: "{{ code_server_aap_gateway_password }}"
+    validate_certs: "{{ code_server_aap_gateway_verify_ssl }}"
     description: MCP server authentication token
     scope: write
     state: present
