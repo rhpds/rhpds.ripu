@@ -1,0 +1,3 @@
+---
+download_aap_manifest_url: "https://d3s3zqyaz8cp2d.cloudfront.net/aap/manifest.zip"
+download_aap_manifest_dest: /tmp/aap_manifest.zip
