@@ -92,7 +92,7 @@ code_server_claude_npm_package: "@anthropic-ai/claude-code"
 # API configuration - set these in catalog YAML
 code_server_claude_api_base_url: ""
 code_server_claude_api_key: ""
-code_server_claude_default_model: "sonnet[1m]"
+code_server_claude_default_model: "claude-sonnet-4-6[1m]"
 # MCP server connection - set in catalog YAML to enable
 code_server_mcp_server_url: ""
 code_server_mcp_remote_version: "0.1.38"
