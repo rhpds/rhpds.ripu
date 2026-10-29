@@ -63,16 +63,18 @@ All templates use a `rhel_inventory_group` survey variable to select which hosts
 | `rhel8` | RHEL 8 hosts only |
 | `rhel9` | RHEL 9 hosts only |
 
-The limit field (`ask_limit_on_launch`) behavior differs by template:
-- `AUTO / 01 Analysis` — does **not** accept a limit at launch; use `rhel_inventory_group` alone to scope hosts
-- `OS / Remediation` — accepts a limit; use it to target a specific host within the group
-- `AUTO / 02 Upgrade`, `AUTO / 03 Rollback`, `AUTO / 04 Commit` — accept a limit; use it to further narrow within the group if needed
+All templates accept a limit at launch (`ask_limit_on_launch: true`). Use it to further narrow targeting within the selected group when needed.
+
+### Targeting rules
+
+- **When using a limit** (one or more specific hosts): always set `rhel_inventory_group: ALL_rhel`. This guarantees the group never silently excludes a target host regardless of which RHEL version it runs.
+- **Only when targeting a whole group with no limit**: use the specific group value (`rhel7`, `rhel8`, or `rhel9`).
 
 ### Targeting examples
 
 - All hosts → `rhel_inventory_group: ALL_rhel`, no limit
 - All RHEL 7 hosts → `rhel_inventory_group: rhel7`, no limit
-- One specific host (e.g. after remediation) → `rhel_inventory_group: rhel7`, limit: `upward7fox`
+- One or more specific hosts → `rhel_inventory_group: ALL_rhel`, limit: `upward7fox` (or `upward7fox,actual9lizard` etc.)
 
 ## Supported Upgrade Paths
 
