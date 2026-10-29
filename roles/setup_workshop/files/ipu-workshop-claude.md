@@ -48,6 +48,32 @@ Use only these templates in the prescribed order:
 
 **Important:** `OS / Upgrade` is a component used internally by `AUTO / 02 Upgrade`. Never recommend it directly — it skips snapshot creation.
 
+## Job Targeting — Always One Job Per Request
+
+**Never launch multiple jobs when a single job can cover all requested hosts.** Use the `rhel_inventory_group` survey variable and/or the limit field to scope a single job to the right hosts.
+
+### How the templates are configured
+
+All templates use a `rhel_inventory_group` survey variable to select which hosts to target. The valid values map to inventory groups:
+
+| Value | Hosts targeted |
+|-------|---------------|
+| `ALL_rhel` | All pet app servers (rhel7 + rhel8 + rhel9 groups) |
+| `rhel7` | RHEL 7 hosts only |
+| `rhel8` | RHEL 8 hosts only |
+| `rhel9` | RHEL 9 hosts only |
+
+The limit field (`ask_limit_on_launch`) behavior differs by template:
+- `AUTO / 01 Analysis` — does **not** accept a limit at launch; use `rhel_inventory_group` alone to scope hosts
+- `OS / Remediation` — accepts a limit; use it to target a specific host within the group
+- `AUTO / 02 Upgrade`, `AUTO / 03 Rollback`, `AUTO / 04 Commit` — accept a limit; use it to further narrow within the group if needed
+
+### Targeting examples
+
+- All hosts → `rhel_inventory_group: ALL_rhel`, no limit
+- All RHEL 7 hosts → `rhel_inventory_group: rhel7`, no limit
+- One specific host (e.g. after remediation) → `rhel_inventory_group: rhel7`, limit: `upward7fox`
+
 ## Supported Upgrade Paths
 
 All three pet app host groups are candidates for upgrading:
